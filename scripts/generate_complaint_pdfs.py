@@ -15,12 +15,12 @@ from fpdf import FPDF
 
 random.seed(42)
 
-# --- Configuration ---
-PROFILE = "fevm-serverless-stable-ocafq5"
-CATALOG = "serverless_stable_ocafq5_catalog"
-SCHEMA = "chd_demo"
+# --- Configuration (set via environment variables) ---
+PROFILE = os.environ.get("DATABRICKS_PROFILE", "DEFAULT")
+CATALOG = os.environ["DATABRICKS_CATALOG"]
+SCHEMA = os.environ.get("DATABRICKS_SCHEMA", "chd_demo")
 VOLUME = "complaint_docs"
-WAREHOUSE_ID = "46430b387bfd91fd"
+WAREHOUSE_ID = os.environ["DATABRICKS_WAREHOUSE_ID"]
 OUTPUT_DIR = "output/complaint_pdfs"
 UC_VOLUME_PATH = f"dbfs:/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}"
 

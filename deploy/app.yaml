@@ -8,4 +8,12 @@ command:
 
 env:
   - name: DATABRICKS_WAREHOUSE_ID
-    value: "46430b387bfd91fd"
+    value: "<YOUR_WAREHOUSE_ID>"
+  - name: DATABRICKS_CATALOG
+    value: "<YOUR_CATALOG>"
+  - name: DATABRICKS_SCHEMA
+    value: "chd_demo"
+  - name: DATABRICKS_MAS_ENDPOINT
+    value: "<YOUR_MAS_ENDPOINT>"
+  - name: DATABRICKS_MMM_ENDPOINT
+    value: "<YOUR_MMM_ENDPOINT>"

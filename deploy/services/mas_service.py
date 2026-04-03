@@ -2,7 +2,7 @@ import httpx
 import os
 from databricks.sdk import WorkspaceClient
 
-MAS_ENDPOINT = "mas-bc869504-endpoint"
+MAS_ENDPOINT = os.environ["DATABRICKS_MAS_ENDPOINT"]
 
 
 def _get_auth() -> tuple[str, dict]:

@@ -1,9 +1,9 @@
 import os
 from databricks.sdk import WorkspaceClient
 
-WAREHOUSE_ID = "46430b387bfd91fd"
-CATALOG = "serverless_stable_ocafq5_catalog"
-SCHEMA = "chd_demo"
+WAREHOUSE_ID = os.environ["DATABRICKS_WAREHOUSE_ID"]
+CATALOG = os.environ["DATABRICKS_CATALOG"]
+SCHEMA = os.environ.get("DATABRICKS_SCHEMA", "chd_demo")
 
 
 NUMERIC_COLUMNS = {

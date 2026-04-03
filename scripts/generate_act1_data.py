@@ -9,7 +9,8 @@ import uuid
 import math
 from datetime import date, timedelta
 
-os.environ["DATABRICKS_CONFIG_PROFILE"] = "fevm-serverless-stable-ocafq5"
+PROFILE = os.environ.get("DATABRICKS_PROFILE", "DEFAULT")
+os.environ["DATABRICKS_CONFIG_PROFILE"] = PROFILE
 
 from mimesis import Generic, Locale
 from pyspark.sql import Row
@@ -21,8 +22,8 @@ from databricks.connect import DatabricksSession
 random.seed(42)
 gen = Generic(locale=Locale.EN, seed=42)
 
-CATALOG = "serverless_stable_ocafq5_catalog"
-SCHEMA = "chd_demo"
+CATALOG = os.environ["DATABRICKS_CATALOG"]
+SCHEMA = os.environ.get("DATABRICKS_SCHEMA", "chd_demo")
 
 def table_path(name: str) -> str:
     return f"{CATALOG}.{SCHEMA}.{name}"
@@ -31,7 +32,7 @@ def table_path(name: str) -> str:
 # Spark session
 # ---------------------------------------------------------------------------
 print("Connecting to Databricks ...")
-spark = DatabricksSession.builder.profile("fevm-serverless-stable-ocafq5").serverless().getOrCreate()
+spark = DatabricksSession.builder.profile(PROFILE).serverless().getOrCreate()
 print("Connected.")
 
 # ===================================================================

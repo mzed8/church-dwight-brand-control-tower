@@ -7,7 +7,8 @@ import os
 import random
 from datetime import date, timedelta
 
-os.environ["DATABRICKS_CONFIG_PROFILE"] = "fevm-serverless-stable-ocafq5"
+PROFILE = os.environ.get("DATABRICKS_PROFILE", "DEFAULT")
+os.environ["DATABRICKS_CONFIG_PROFILE"] = PROFILE
 
 import polars as pl
 
@@ -345,8 +346,10 @@ print(f"promotions rows: {len(df_promos)}")
 # ============================================================================
 from databricks.connect import DatabricksSession
 
-spark = DatabricksSession.builder.profile("fevm-serverless-stable-ocafq5").serverless().getOrCreate()
-CATALOG_SCHEMA = "serverless_stable_ocafq5_catalog.chd_demo"
+CATALOG = os.environ["DATABRICKS_CATALOG"]
+SCHEMA = os.environ.get("DATABRICKS_SCHEMA", "chd_demo")
+spark = DatabricksSession.builder.profile(PROFILE).serverless().getOrCreate()
+CATALOG_SCHEMA = f"{CATALOG}.{SCHEMA}"
 
 
 def write_table(polars_df: pl.DataFrame, table_name: str):

@@ -19,7 +19,8 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-os.environ["DATABRICKS_CONFIG_PROFILE"] = "fevm-serverless-stable-ocafq5"
+PROFILE = os.environ.get("DATABRICKS_PROFILE", "DEFAULT")
+os.environ["DATABRICKS_CONFIG_PROFILE"] = PROFILE
 
 import numpy as np
 import pandas as pd
@@ -38,9 +39,9 @@ from pyspark.sql.types import (
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-CATALOG = "serverless_stable_ocafq5_catalog"
-SCHEMA = "chd_demo"
-EXPERIMENT_NAME = "/Users/minjia.zhan@databricks.com/chd_demo/marketing_mix_model_v2"
+CATALOG = os.environ["DATABRICKS_CATALOG"]
+SCHEMA = os.environ.get("DATABRICKS_SCHEMA", "chd_demo")
+EXPERIMENT_NAME = os.environ.get("DATABRICKS_EXPERIMENT_PATH", f"/Users/{os.environ.get('DATABRICKS_USER', 'user')}/{SCHEMA}/marketing_mix_model_v2")
 UC_MODEL_NAME = f"{CATALOG}.{SCHEMA}.marketing_mix_model"
 ALPHA = 1.0
 
@@ -148,7 +149,7 @@ def evaluate(y_true, y_pred):
 # 1. Connect to Databricks
 # ===================================================================
 print("Connecting to Databricks (serverless) ...")
-spark = DatabricksSession.builder.profile("fevm-serverless-stable-ocafq5").serverless().getOrCreate()
+spark = DatabricksSession.builder.profile(PROFILE).serverless().getOrCreate()
 print("  Connected.\n")
 
 # ===================================================================
@@ -252,8 +253,8 @@ print(f"  Wrote {cnt} rows to {CATALOG}.{SCHEMA}.mmm_training_data\n")
 # ===================================================================
 # 4. MLflow setup
 # ===================================================================
-mlflow.set_tracking_uri("databricks://fevm-serverless-stable-ocafq5")
-mlflow.set_registry_uri("databricks-uc://fevm-serverless-stable-ocafq5")
+mlflow.set_tracking_uri(f"databricks://{PROFILE}")
+mlflow.set_registry_uri(f"databricks-uc://{PROFILE}")
 mlflow.set_experiment(EXPERIMENT_NAME)
 experiment = mlflow.get_experiment_by_name(EXPERIMENT_NAME)
 print(f"MLflow experiment: {EXPERIMENT_NAME}")

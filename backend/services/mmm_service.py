@@ -2,11 +2,12 @@ import os
 import httpx
 from databricks.sdk import WorkspaceClient
 
-MMM_ENDPOINT = "chd-marketing-mix-model"
+MMM_ENDPOINT = os.environ.get("DATABRICKS_MMM_ENDPOINT", "chd-marketing-mix-model")
 
 
 def _get_auth() -> tuple[str, dict]:
-    w = WorkspaceClient(profile=os.getenv("DATABRICKS_PROFILE", "fevm-serverless-stable-ocafq5"))
+    profile = os.getenv("DATABRICKS_PROFILE")
+    w = WorkspaceClient(profile=profile) if profile else WorkspaceClient()
     host = w.config.host.rstrip("/")
     headers = w.config.authenticate()
     headers["Content-Type"] = "application/json"

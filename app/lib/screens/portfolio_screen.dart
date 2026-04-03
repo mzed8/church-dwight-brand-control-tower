@@ -427,7 +427,7 @@ class _GovernanceBadge extends StatelessWidget {
           Icon(Icons.verified_outlined, size: 13, color: textColor.withValues(alpha: 0.7)),
           const SizedBox(width: 6),
           Text(
-            'Data: serverless_stable_ocafq5_catalog.chd_demo  |  Unity Catalog Governed',
+            'Data: Unity Catalog Governed',
             style: TextStyle(
               fontSize: 11,
               color: textColor.withValues(alpha: 0.7),

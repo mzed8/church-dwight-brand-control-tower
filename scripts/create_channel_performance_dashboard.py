@@ -284,11 +284,13 @@ class LakeviewDashboard:
 # ---------------------------------------------------------------------------
 # Build the Channel Performance dashboard
 # ---------------------------------------------------------------------------
-CATALOG_SCHEMA = "serverless_stable_ocafq5_catalog.chd_demo"
-WAREHOUSE_ID = "46430b387bfd91fd"
-PARENT_PATH = "/Users/user"
-PROFILE = "fevm-serverless-stable-ocafq5"
-BASE_URL = "https://fevm-serverless-stable-ocafq5.cloud.databricks.com"
+CATALOG = os.environ["DATABRICKS_CATALOG"]
+SCHEMA = os.environ.get("DATABRICKS_SCHEMA", "chd_demo")
+CATALOG_SCHEMA = f"{CATALOG}.{SCHEMA}"
+WAREHOUSE_ID = os.environ["DATABRICKS_WAREHOUSE_ID"]
+PARENT_PATH = f"/Users/{os.environ.get('DATABRICKS_USER', 'user')}"
+PROFILE = os.environ.get("DATABRICKS_PROFILE", "DEFAULT")
+BASE_URL = os.environ.get("DATABRICKS_HOST", "")
 
 dashboard = LakeviewDashboard("CHD Marketing Channel Performance")
 

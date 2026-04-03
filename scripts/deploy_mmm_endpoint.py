@@ -17,11 +17,13 @@ import time
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-PROFILE = "fevm-serverless-stable-ocafq5"
-WORKSPACE = "https://fevm-serverless-stable-ocafq5.cloud.databricks.com"
-ENDPOINT_NAME = "chd-marketing-mix-model"
-MODEL_NAME = "serverless_stable_ocafq5_catalog.chd_demo.marketing_mix_model"
-MODEL_VERSION = "2"
+PROFILE = os.environ.get("DATABRICKS_PROFILE", "DEFAULT")
+WORKSPACE = os.environ.get("DATABRICKS_HOST", "")
+CATALOG = os.environ["DATABRICKS_CATALOG"]
+SCHEMA = os.environ.get("DATABRICKS_SCHEMA", "chd_demo")
+ENDPOINT_NAME = os.environ.get("DATABRICKS_MMM_ENDPOINT", "chd-marketing-mix-model")
+MODEL_NAME = f"{CATALOG}.{SCHEMA}.marketing_mix_model"
+MODEL_VERSION = "1"
 
 # Feature order (from training script):
 # 8 spend cols (in channel order)
