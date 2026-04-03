@@ -16,7 +16,36 @@ The Brand Control Tower is a real-time brand marketing intelligence platform tha
 
 The demo uses Church & Dwight's actual brand portfolio (ARM & HAMMER, OxiClean, TheraBreath, Batiste, HERO Cosmetics) with synthetic data that reflects realistic market dynamics.
 
-## Multi-Agent Supervisor (MAS) Architecture
+## Architecture
+
+```
+church-dwight-brand-control-tower/
+├── config.json         # Full demo configuration (brands, alerts, theme, etc.)
+├── app/                # Flutter web frontend
+│   ├── lib/
+│   │   ├── models/     # Brand, Alert, Scenario data models
+│   │   ├── providers/  # Riverpod state management
+│   │   ├── screens/    # Portfolio, Brand Detail, Scenario Planner, Chat
+│   │   ├── services/   # API service (Dio HTTP client)
+│   │   ├── theme/      # CHD corporate blue (#003DA5) theme
+│   │   └── widgets/    # Charts, cards, animations
+│   └── pubspec.yaml
+├── deploy/             # Databricks Apps deployment bundle
+│   ├── app.py          # FastAPI entry point
+│   ├── app.yaml        # SET YOUR ENV VARS HERE
+│   ├── requirements.txt
+│   ├── routes/         # API routes (brands, alerts, chat, scenario)
+│   └── services/       # Databricks SDK, MAS, MMM clients
+├── backend/            # FastAPI backend (same as deploy, for local dev)
+└── scripts/            # Data generation & ML training
+    ├── generate_act1_data.py       # Bronze tables
+    ├── generate_act2_data.py       # Bronze tables
+    ├── generate_complaint_pdfs.py  # PDF complaints for Knowledge Agent
+    ├── train_mmm_model.py          # Marketing Mix Model
+    └── deploy_mmm_endpoint.py      # Model serving endpoint
+```
+
+## Multi-Agent Supervisor (MAS)
 
 The chat interface is powered by a **Multi-Agent Supervisor** — an orchestration layer that routes user questions to specialized sub-agents and synthesizes their responses.
 
@@ -40,15 +69,10 @@ The chat interface is powered by a **Multi-Agent Supervisor** — an orchestrati
          └──────────┬──────────┘      └───────────┬──────────┘
                     │                             │
          ┌──────────▼──────────┐      ┌───────────▼──────────┐
-         │  8 Unity Catalog    │      │  PDF complaint docs  │
-         │  tables:            │      │  in UC Volume:       │
-         │  - brand_health     │      │  - Retailer feedback │
-         │  - channel_perf     │      │  - Quality reports   │
-         │  - social_engage    │      │  - Consumer complaints│
-         │  - marketing_spend  │      │                      │
-         │  - sales_pos        │      │                      │
-         │  - brands/products  │      │                      │
-         │  - reviews_silver   │      │                      │
+         │  8 Unity Catalog    │      │  ~50 PDF complaint   │
+         │  tables (see Data   │      │  docs in UC Volume   │
+         │  Model below)       │      │  /Volumes/.../       │
+         │                     │      │  complaint_docs      │
          └─────────────────────┘      └──────────────────────┘
 ```
 
@@ -69,9 +93,198 @@ The chat interface is powered by a **Multi-Agent Supervisor** — an orchestrati
 | Component | Type | What it does |
 |-----------|------|-------------|
 | **CHD_Brand_Control_Tower** | Multi-Agent Supervisor | Orchestrates routing between sub-agents, synthesizes final answers |
-| **Brand Intelligence Analyst** | AI/BI Genie Space | Natural language to SQL over 8 Unity Catalog tables (brand health, channel performance, social engagement, spend, sales) |
-| **Complaint Document Analyst** | Knowledge Agent | Retrieval-augmented generation over ~50 complaint PDFs stored in a UC Volume |
-| **Marketing Mix Model** | Model Serving Endpoint | Ridge regression model for scenario planning (channel spend to revenue prediction) |
+| **Brand Intelligence Analyst** | AI/BI Genie Space | Natural language to SQL over 8 Unity Catalog tables |
+| **Complaint Document Analyst** | Knowledge Agent | Retrieval-augmented generation over ~50 complaint PDFs in a UC Volume |
+| **Marketing Mix Model** | Model Serving Endpoint | Ridge regression model for scenario planning (channel spend to revenue) |
+
+### Genie Space configuration
+
+The Genie Space ("CHD Brand Intelligence") is connected to a SQL Warehouse and linked to 8 Unity Catalog tables. When a user asks a data question, the Genie Space automatically translates natural language into SQL, executes it against these tables, and returns the results.
+
+Tables linked to the Genie Space:
+
+| Table | Why it's included |
+|-------|------------------|
+| `brands` | Brand lookup — maps brand IDs to names, categories, and revenue |
+| `products` | Product catalog — enables drill-down from brand to individual SKUs |
+| `brand_health_daily` | Core health metric — daily health scores, sentiment splits, review counts per brand |
+| `channel_performance_weekly` | Marketing efficiency — weekly ROAS, spend, revenue, impressions, clicks per channel per brand |
+| `social_engagement_daily` | Social monitoring — daily engagement volume and post counts by platform per brand |
+| `marketing_spend` | Raw spend data — campaign-level spend with impressions and clicks by channel |
+| `sales_pos` | Point-of-sale — unit sales, revenue, and promotion flags by product/retailer/region |
+| `reviews_silver` | Enriched reviews — individual reviews joined with brand names and retailer names for text analysis |
+
+The Genie Space does NOT include `social_posts_raw`, `reviews_raw`, or `promotions` — these are used during data generation but are either too granular or already aggregated into the Gold tables above.
+
+## Data Model
+
+All data is synthetic, generated by the scripts in `scripts/`. The tables follow a Bronze-Silver-Gold medallion architecture within a single Unity Catalog schema.
+
+### Bronze tables (generated by scripts)
+
+**`brands`** — 5 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| brand_id | bigint | Primary key (1-5) |
+| brand_name | string | Display name (e.g. "ARM & HAMMER") |
+| category | string | Product category |
+| annual_revenue_mm | double | Annual revenue in millions |
+| flagship_product | string | Best-known product |
+
+**`products`** — 47 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| product_id | bigint | Primary key |
+| brand_id | bigint | FK to brands |
+| product_name | string | Product display name |
+| sub_category | string | Sub-category within brand |
+| avg_price | double | Average retail price |
+| upc | string | Simulated UPC code |
+
+**`retailers`** — 5 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| retailer_id | bigint | Primary key (1-5) |
+| retailer_name | string | Walmart, Amazon, Target, Kroger, Costco |
+| channel_type | string | Mass, E-commerce, Grocery, Club |
+| has_retail_media | boolean | Whether retailer has a media network |
+| retail_media_name | string | Name of the media network |
+
+**`reviews_raw`** — 50,000 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| review_id | string | UUID |
+| product_id | bigint | FK to products |
+| retailer_id | bigint | FK to retailers |
+| rating | bigint | 1-5 star rating |
+| review_title | string | Review headline |
+| review_text | string | Full review body |
+| reviewer_name | string | Synthetic reviewer name |
+| review_date | date | Date of review |
+| verified_purchase | boolean | Verified purchase flag |
+| helpful_votes | bigint | Helpful vote count |
+
+**`social_posts_raw`** — 20,000 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| post_id | string | UUID |
+| brand_id | bigint | FK to brands |
+| platform | string | TikTok, Instagram, YouTube, Twitter, Reddit |
+| post_text | string | Post content |
+| author_handle | string | Synthetic social handle |
+| author_type | string | consumer, influencer, brand |
+| engagement_count | bigint | Likes + shares + comments |
+| post_date | date | Date of post |
+| url | string | Simulated post URL |
+
+**`marketing_spend`** — 5,000 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| spend_id | int | Primary key |
+| brand_id | int | FK to brands |
+| channel | string | Paid Search, Social Media, Linear TV, etc. |
+| spend_amount | double | Weekly spend in USD |
+| impressions | bigint | Ad impressions |
+| clicks | bigint | Ad clicks |
+| week_start_date | timestamp | Start of reporting week |
+| campaign_name | string | Campaign identifier |
+
+**`sales_pos`** — 100,000 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| sale_id | int | Primary key |
+| product_id | int | FK to products |
+| retailer_id | int | FK to retailers |
+| region | string | Geographic region |
+| units_sold | int | Units sold |
+| revenue | double | Revenue in USD |
+| week_start_date | timestamp | Start of reporting week |
+| is_promoted | boolean | Whether sale was during a promotion |
+
+**`promotions`** — 500 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| promo_id | int | Primary key |
+| brand_id | int | FK to brands |
+| retailer_id | int | FK to retailers |
+| promo_type | string | BOGO, Discount, Display, Coupon |
+| start_date | date | Promotion start |
+| end_date | date | Promotion end |
+| discount_pct | double | Discount percentage |
+
+### Silver tables (created via SQL joins)
+
+**`reviews_silver`** — 50,000 rows
+Enriched version of `reviews_raw` joined with `products`, `brands`, and `retailers`. Adds `brand_id`, `brand_name`, and `retailer_name` columns to every review for easier querying.
+
+**`social_posts_silver`** — 20,000 rows
+Enriched version of `social_posts_raw` joined with `brands`. Adds `brand_name` column.
+
+### Gold tables (created via SQL aggregations)
+
+**`brand_health_daily`** — ~1,400 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| brand_id | bigint | FK to brands |
+| brand_name | string | Brand display name |
+| review_date | date | Date |
+| health_score | double | 0-100 score derived from avg rating |
+| positive_pct | double | % of reviews rated 4-5 stars |
+| negative_pct | double | % of reviews rated 1-2 stars |
+| review_count | double | Number of reviews that day |
+
+**`channel_performance_weekly`** — ~varies
+
+| Column | Type | Description |
+|--------|------|-------------|
+| brand_name | string | Brand display name |
+| channel | string | Marketing channel |
+| week_start_date | timestamp | Start of reporting week |
+| spend_amount | double | Total spend |
+| total_revenue | double | Total attributed revenue |
+| roas | double | Return on ad spend (revenue/spend) |
+| impressions | bigint | Total impressions |
+| clicks | bigint | Total clicks |
+
+**`social_engagement_daily`** — ~5,000 rows
+
+| Column | Type | Description |
+|--------|------|-------------|
+| brand_name | string | Brand display name |
+| platform | string | Social platform |
+| post_date | date | Date |
+| total_engagement | bigint | Sum of engagement counts |
+| avg_engagement | double | Average engagement per post |
+| post_count | bigint | Number of posts |
+
+---
+
+## Demo Brands
+
+| # | Brand | Category | Status | Health Score |
+|---|-------|----------|--------|-------------|
+| 1 | ARM & HAMMER | Household / Multi-Category | CRITICAL | 64 |
+| 2 | OxiClean | Household / Stain Removal | WARNING | 76 |
+| 3 | TheraBreath | Oral Care | HEALTHY | 82 |
+| 4 | Batiste | Personal Care / Beauty | HEALTHY | 86 |
+| 5 | HERO Cosmetics | Skincare / Acne Care | OPPORTUNITY | 90 |
+
+## Alert Narratives
+
+1. **CRITICAL -- Cat Litter Reformulation Complaints Surge**: ARM & HAMMER DUAL DEFENSE Cat Litter with Microban generating negative reviews about chemical smell and clumping failure.
+2. **WARNING -- Linear TV Over-Indexed vs. Retail Media**: OxiClean over-spending on Linear TV while Retail Media delivers 4.2x ROAS.
+3. **OPPORTUNITY -- TikTok Cleanser Launch Amplification**: HERO Cosmetics TikTok engagement up 270% ahead of 3-SKU cleanser launch.
+
+---
 
 ## Setup
 
@@ -124,50 +337,7 @@ python scripts/generate_act2_data.py        # Bronze: marketing_spend, sales_pos
 python scripts/generate_complaint_pdfs.py   # PDF complaints -> UC Volume
 ```
 
-Then create the Silver and Gold tables via SQL:
-```sql
--- Silver: reviews_silver
-CREATE OR REPLACE TABLE <catalog>.<schema>.reviews_silver AS
-SELECT r.*, p.brand_id, b.brand_name, ret.retailer_name
-FROM reviews_raw r
-JOIN products p ON r.product_id = p.product_id
-JOIN brands b ON p.brand_id = b.brand_id
-JOIN retailers ret ON r.retailer_id = ret.retailer_id;
-
--- Silver: social_posts_silver
-CREATE OR REPLACE TABLE <catalog>.<schema>.social_posts_silver AS
-SELECT s.*, b.brand_name
-FROM social_posts_raw s JOIN brands b ON s.brand_id = b.brand_id;
-
--- Gold: brand_health_daily
-CREATE OR REPLACE TABLE <catalog>.<schema>.brand_health_daily AS
-SELECT p.brand_id, b.brand_name, date_trunc('day', r.review_date) AS review_date,
-       ROUND(AVG(r.rating)/5.0*100,1) AS health_score,
-       ROUND(SUM(CASE WHEN r.rating>=4 THEN 1 ELSE 0 END)*100.0/COUNT(*),1) AS positive_pct,
-       ROUND(SUM(CASE WHEN r.rating<=2 THEN 1 ELSE 0 END)*100.0/COUNT(*),1) AS negative_pct,
-       CAST(COUNT(*) AS DOUBLE) AS review_count
-FROM reviews_raw r JOIN products p ON r.product_id=p.product_id JOIN brands b ON p.brand_id=b.brand_id
-GROUP BY p.brand_id, b.brand_name, date_trunc('day', r.review_date);
-
--- Gold: channel_performance_weekly
-CREATE OR REPLACE TABLE <catalog>.<schema>.channel_performance_weekly AS
-SELECT b.brand_name, ms.channel, ms.week_start_date,
-       SUM(ms.spend_amount) AS spend_amount, SUM(sp.revenue) AS total_revenue,
-       CASE WHEN SUM(ms.spend_amount)>0 THEN ROUND(SUM(sp.revenue)/SUM(ms.spend_amount),2) ELSE 0 END AS roas,
-       SUM(ms.impressions) AS impressions, SUM(ms.clicks) AS clicks
-FROM marketing_spend ms JOIN brands b ON ms.brand_id=b.brand_id
-LEFT JOIN (SELECT p.brand_id, s.week_start_date, SUM(s.revenue) AS revenue
-           FROM sales_pos s JOIN products p ON s.product_id=p.product_id GROUP BY 1,2) sp
-ON ms.brand_id=sp.brand_id AND ms.week_start_date=sp.week_start_date
-GROUP BY b.brand_name, ms.channel, ms.week_start_date;
-
--- Gold: social_engagement_daily
-CREATE OR REPLACE TABLE <catalog>.<schema>.social_engagement_daily AS
-SELECT brand_name, platform, date_trunc('day', post_date) AS post_date,
-       SUM(engagement_count) AS total_engagement, ROUND(AVG(engagement_count),1) AS avg_engagement,
-       COUNT(*) AS post_count
-FROM social_posts_silver GROUP BY 1,2,3;
-```
+Then create Silver and Gold tables. See the SQL definitions in `scripts/create_silver_gold_tables.sql` or refer to the **Data Model** section above for column schemas. The Silver tables are joins of Bronze tables; the Gold tables are daily/weekly aggregations.
 
 ### 4. Train the Marketing Mix Model
 
@@ -191,7 +361,7 @@ from databricks_tools_core.agent_bricks.manager import AgentBricksManager
 w = WorkspaceClient(profile="<YOUR_PROFILE>")
 manager = AgentBricksManager(w)
 
-# Genie Space
+# Genie Space — linked to 8 tables (see Genie Space Configuration above)
 genie = manager.genie_create(
     display_name="CHD Brand Intelligence",
     warehouse_id="<YOUR_WAREHOUSE_ID>",
@@ -207,7 +377,7 @@ genie = manager.genie_create(
     ],
 )
 
-# Knowledge Agent
+# Knowledge Agent — reads PDFs from the UC Volume
 ka = manager.ka_create(
     name="CHD Complaint Docs",
     knowledge_sources=[{
@@ -220,7 +390,7 @@ ka = manager.ka_create(
     description="Retailer complaint documents for Church & Dwight brands",
 )
 
-# Multi-Agent Supervisor
+# Multi-Agent Supervisor — wires the two agents together
 mas = manager.mas_create(
     name="CHD_Brand_Control_Tower",
     description="Multi-agent supervisor for Church & Dwight brand marketing intelligence",
@@ -299,50 +469,3 @@ DATABRICKS_PROFILE=<profile> DATABRICKS_WAREHOUSE_ID=<id> DATABRICKS_CATALOG=<ca
 | `DATABRICKS_MAS_ENDPOINT` | App | deploy/, backend/ | Multi-Agent Supervisor endpoint name |
 | `DATABRICKS_MMM_ENDPOINT` | App | deploy/, backend/ | Marketing Mix Model endpoint name |
 | `DATABRICKS_EXPERIMENT_PATH` | Optional | scripts/ | Custom MLflow experiment path |
-
----
-
-## Demo Brands
-
-| # | Brand | Category | Status | Health Score |
-|---|-------|----------|--------|-------------|
-| 1 | ARM & HAMMER | Household / Multi-Category | CRITICAL | 64 |
-| 2 | OxiClean | Household / Stain Removal | WARNING | 76 |
-| 3 | TheraBreath | Oral Care | HEALTHY | 82 |
-| 4 | Batiste | Personal Care / Beauty | HEALTHY | 86 |
-| 5 | HERO Cosmetics | Skincare / Acne Care | OPPORTUNITY | 90 |
-
-## Alert Narratives
-
-1. **CRITICAL -- Cat Litter Reformulation Complaints Surge**: ARM & HAMMER DUAL DEFENSE Cat Litter with Microban generating negative reviews about chemical smell and clumping failure.
-2. **WARNING -- Linear TV Over-Indexed vs. Retail Media**: OxiClean over-spending on Linear TV while Retail Media delivers 4.2x ROAS.
-3. **OPPORTUNITY -- TikTok Cleanser Launch Amplification**: HERO Cosmetics TikTok engagement up 270% ahead of 3-SKU cleanser launch.
-
-## Architecture
-
-```
-church-dwight-brand-control-tower/
-├── config.json         # Full demo configuration (brands, alerts, theme, etc.)
-├── app/                # Flutter web frontend
-│   ├── lib/
-│   │   ├── models/     # Brand, Alert, Scenario data models
-│   │   ├── providers/  # Riverpod state management
-│   │   ├── screens/    # Portfolio, Brand Detail, Scenario Planner, Chat
-│   │   ├── services/   # API service (Dio HTTP client)
-│   │   ├── theme/      # CHD corporate blue (#003DA5) theme
-│   │   └── widgets/    # Charts, cards, animations
-│   └── pubspec.yaml
-├── deploy/             # Databricks Apps deployment bundle
-│   ├── app.py          # FastAPI entry point
-│   ├── app.yaml        # SET YOUR ENV VARS HERE
-│   ├── requirements.txt
-│   ├── routes/         # API routes (brands, alerts, chat, scenario)
-│   └── services/       # Databricks SDK, MAS, MMM clients
-├── backend/            # FastAPI backend (same as deploy, for local dev)
-└── scripts/            # Data generation & ML training
-    ├── generate_act1_data.py       # Bronze tables
-    ├── generate_act2_data.py       # Bronze tables
-    ├── generate_complaint_pdfs.py  # PDF complaints for Knowledge Agent
-    ├── train_mmm_model.py          # Marketing Mix Model
-    └── deploy_mmm_endpoint.py      # Model serving endpoint
-```
