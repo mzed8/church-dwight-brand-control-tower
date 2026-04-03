@@ -3,6 +3,76 @@
 Personalized brand marketing intelligence demo for **Church & Dwight Co., Inc.** (NYSE: CHD).
 Flutter web frontend + FastAPI backend deployed on Databricks Apps, with AI/BI Genie Space, Knowledge Agent, and Multi-Agent Supervisor.
 
+## What is the Brand Control Tower?
+
+The Brand Control Tower is a real-time brand marketing intelligence platform that gives portfolio brand managers a single pane of glass across brand health, marketing spend efficiency, social engagement, and consumer sentiment. Instead of toggling between dashboards, spreadsheets, and agency reports, a brand director can:
+
+- **Monitor brand health** — daily health scores computed from consumer reviews, with trend lines and sentiment breakdowns (positive/negative/neutral) per brand
+- **Optimize channel spend** — see ROAS by marketing channel (Paid Search, Social, Linear TV, Retail Media, CTV, etc.) and identify misallocations where spend doesn't match return
+- **Track social engagement** — engagement volume and trends across TikTok, Instagram, YouTube, and other platforms per brand
+- **Act on AI-generated alerts** — three severity tiers (critical, warning, opportunity) surface the most important issues across the portfolio, with recommended actions
+- **Run scenario planning** — adjust channel spend sliders and see projected revenue impact using a Marketing Mix Model (Ridge regression trained on the demo data)
+- **Ask questions in natural language** — a chat interface powered by a Multi-Agent Supervisor routes questions to the right AI agent for structured data or unstructured document analysis
+
+The demo uses Church & Dwight's actual brand portfolio (ARM & HAMMER, OxiClean, TheraBreath, Batiste, HERO Cosmetics) with synthetic data that reflects realistic market dynamics.
+
+## Multi-Agent Supervisor (MAS) Architecture
+
+The chat interface is powered by a **Multi-Agent Supervisor** — an orchestration layer that routes user questions to specialized sub-agents and synthesizes their responses.
+
+```
+                         ┌──────────────────────────┐
+                         │   Multi-Agent Supervisor  │
+                         │  (CHD_Brand_Control_Tower) │
+                         │                          │
+                         │  Routes questions to the  │
+                         │  right specialist agent   │
+                         └─────────┬────────────────┘
+                                   │
+                    ┌──────────────┴──────────────┐
+                    │                             │
+         ┌──────────▼──────────┐      ┌───────────▼──────────┐
+         │ Brand Intelligence  │      │ Complaint Document   │
+         │     Analyst         │      │     Analyst          │
+         │                     │      │                      │
+         │  AI/BI Genie Space  │      │  Knowledge Agent     │
+         │  (structured data)  │      │  (unstructured docs) │
+         └──────────┬──────────┘      └───────────┬──────────┘
+                    │                             │
+         ┌──────────▼──────────┐      ┌───────────▼──────────┐
+         │  8 Unity Catalog    │      │  PDF complaint docs  │
+         │  tables:            │      │  in UC Volume:       │
+         │  - brand_health     │      │  - Retailer feedback │
+         │  - channel_perf     │      │  - Quality reports   │
+         │  - social_engage    │      │  - Consumer complaints│
+         │  - marketing_spend  │      │                      │
+         │  - sales_pos        │      │                      │
+         │  - brands/products  │      │                      │
+         │  - reviews_silver   │      │                      │
+         └─────────────────────┘      └──────────────────────┘
+```
+
+### How it works
+
+1. **User asks a question** via the chat drawer in the Flutter app (e.g., "What's happening with ARM & HAMMER?" or "Show me complaint trends for cat litter")
+
+2. **The MAS supervisor** analyzes the question and decides which agent to invoke:
+   - **Brand Intelligence Analyst** (Genie Space) — for data questions about health scores, ROAS, spend, revenue, social engagement, or any metric that lives in structured tables
+   - **Complaint Document Analyst** (Knowledge Agent) — for questions about quality issues, retailer feedback, consumer complaints, or anything requiring analysis of unstructured PDF documents
+
+3. **The sub-agent executes** — the Genie Space writes and runs SQL against Unity Catalog tables; the Knowledge Agent searches and summarizes complaint PDFs using vector search
+
+4. **The MAS synthesizes** — the supervisor takes the sub-agent's raw output and produces a coherent, contextual response for the user
+
+### Agent Bricks components
+
+| Component | Type | What it does |
+|-----------|------|-------------|
+| **CHD_Brand_Control_Tower** | Multi-Agent Supervisor | Orchestrates routing between sub-agents, synthesizes final answers |
+| **Brand Intelligence Analyst** | AI/BI Genie Space | Natural language to SQL over 8 Unity Catalog tables (brand health, channel performance, social engagement, spend, sales) |
+| **Complaint Document Analyst** | Knowledge Agent | Retrieval-augmented generation over ~50 complaint PDFs stored in a UC Volume |
+| **Marketing Mix Model** | Model Serving Endpoint | Ridge regression model for scenario planning (channel spend to revenue prediction) |
+
 ## Setup
 
 ### Prerequisites
