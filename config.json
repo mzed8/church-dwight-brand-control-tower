@@ -1,0 +1,267 @@
+{
+  "schema_version": "brand_control_tower_config_v1",
+  "company": {
+    "name": "Church & Dwight Co., Inc.",
+    "short_name": "CHD",
+    "ticker": "CHD",
+    "revenue": "$6.2B",
+    "hq": "Ewing, New Jersey",
+    "employees": "~5,550",
+    "industry": "CPG — Household & Personal Care",
+    "key_exec": {
+      "name": "Ray Bajaj",
+      "title": "EVP, Chief Technology & Analytics Officer",
+      "strategic_priority": "Modernizing Church & Dwight's data and analytics infrastructure; joined Jan 2026 from Kimberly-Clark where he led global data & technology transformation"
+    },
+    "additional_execs": [
+      {
+        "name": "Rick Dierker",
+        "title": "President & CEO",
+        "hook": "Leading portfolio premiumization strategy and $2B international growth target; acquired Touchland ($700M) and divested low-margin VMS brands in 2025"
+      },
+      {
+        "name": "Stacey Ramstedt",
+        "title": "Chief Marketing Officer",
+        "hook": "Driving 82% digital marketing spend transformation across 15+ power brands; shifting $645M+ annual ad budget to AI-optimized channels and retail media"
+      }
+    ],
+    "transformation": "Digital-First Analytics Transformation",
+    "major_event": "Q1 2026 Earnings Call — May 1, 2026; FY2026 guidance: 3-4% organic growth, $3.71-$3.81 adjusted EPS"
+  },
+  "narrative": {
+    "persona_name": "Rachel",
+    "persona_title": "VP, Brand Portfolio Analytics",
+    "brand_count": 5,
+    "channel_count": 8,
+    "unique_angle": "A 180-year-old baking soda company that's become a Gen Z social media powerhouse — managing legacy household brands alongside TikTok-viral skincare and beauty acquisitions like HERO Cosmetics and Touchland",
+    "key_financial_impact": "$380K/month from reallocating OxiClean spend from underperforming Linear TV to high-ROAS Retail Media and Connected TV"
+  },
+  "brands": [
+    {
+      "id": "1",
+      "name": "ARM & HAMMER",
+      "category": "Household / Multi-Category",
+      "demo_status": "critical",
+      "demo_health_score": 64,
+      "demo_health_delta": -14,
+      "weekly_spend": 420000,
+      "products": [
+        {"name": "Clean Burst Laundry Detergent", "sub_category": "Laundry", "price": 11.99},
+        {"name": "Plus OxiClean Laundry Detergent", "sub_category": "Laundry", "price": 13.99},
+        {"name": "Baking Soda Fresh Laundry Detergent", "sub_category": "Laundry", "price": 12.49},
+        {"name": "Clump & Seal Cat Litter", "sub_category": "Cat Litter", "price": 18.99},
+        {"name": "DUAL DEFENSE Cat Litter with Microban", "sub_category": "Cat Litter", "price": 21.99},
+        {"name": "Slide Easy Clean-Up Cat Litter", "sub_category": "Cat Litter", "price": 22.99},
+        {"name": "Advance White Toothpaste", "sub_category": "Oral Care", "price": 4.99},
+        {"name": "Complete Care Toothpaste", "sub_category": "Oral Care", "price": 5.49},
+        {"name": "Pure Baking Soda", "sub_category": "Baking Soda", "price": 3.99},
+        {"name": "Carpet & Room Deodorizer", "sub_category": "Home Care", "price": 5.99}
+      ],
+      "hashtags": ["#ArmAndHammer", "#ARMandHAMMER", "#TheWholeDarnArm"]
+    },
+    {
+      "id": "2",
+      "name": "OxiClean",
+      "category": "Household / Stain Removal",
+      "demo_status": "warning",
+      "demo_health_score": 76,
+      "demo_health_delta": -3,
+      "weekly_spend": 195000,
+      "products": [
+        {"name": "Versatile Stain Remover Powder", "sub_category": "Stain Remover", "price": 12.99},
+        {"name": "White Revive Laundry Whitener", "sub_category": "Laundry Additive", "price": 9.99},
+        {"name": "Max Force Gel Stick", "sub_category": "Stain Fighter", "price": 5.99},
+        {"name": "Dark Protect Laundry Booster", "sub_category": "Laundry Additive", "price": 8.99},
+        {"name": "Odor Blasters Stain & Odor Remover", "sub_category": "Stain Remover", "price": 11.99},
+        {"name": "Washing Machine Cleaner", "sub_category": "Machine Care", "price": 10.99},
+        {"name": "Color Boost Color Brightener", "sub_category": "Laundry Additive", "price": 8.49},
+        {"name": "Outdoor Stain Remover", "sub_category": "Outdoor Cleaning", "price": 9.99}
+      ],
+      "hashtags": ["#OxiClean", "#OxiCleanItUp"]
+    },
+    {
+      "id": "3",
+      "name": "TheraBreath",
+      "category": "Oral Care",
+      "demo_status": "healthy",
+      "demo_health_score": 82,
+      "demo_health_delta": 5,
+      "weekly_spend": 145000,
+      "products": [
+        {"name": "Fresh Breath Oral Rinse", "sub_category": "Mouthwash", "price": 13.99},
+        {"name": "Healthy Gums Oral Rinse", "sub_category": "Mouthwash", "price": 13.99},
+        {"name": "Whitening Fresh Breath Toothpaste", "sub_category": "Toothpaste", "price": 9.99},
+        {"name": "Healthy Smile Anticavity Toothpaste", "sub_category": "Toothpaste", "price": 9.99},
+        {"name": "Anti-Cavity Fluoride Toothpaste", "sub_category": "Toothpaste", "price": 8.99},
+        {"name": "Fresh Breath Dry Mouth Lozenges", "sub_category": "Oral Care", "price": 11.99},
+        {"name": "Kids Anticavity Mouthwash", "sub_category": "Children's Oral Care", "price": 8.49},
+        {"name": "Fresh Breath Throat Spray", "sub_category": "Oral Care", "price": 12.99},
+        {"name": "Overnight Oral Rinse", "sub_category": "Mouthwash", "price": 14.99}
+      ],
+      "hashtags": ["#TheraBreath", "#FreshBreath", "#CouchToCart"]
+    },
+    {
+      "id": "4",
+      "name": "Batiste",
+      "category": "Personal Care / Beauty",
+      "demo_status": "healthy",
+      "demo_health_score": 86,
+      "demo_health_delta": 2,
+      "weekly_spend": 110000,
+      "products": [
+        {"name": "Original Dry Shampoo", "sub_category": "Dry Shampoo", "price": 8.99},
+        {"name": "Bare Dry Shampoo", "sub_category": "Dry Shampoo", "price": 9.99},
+        {"name": "Light Dry Shampoo", "sub_category": "Dry Shampoo", "price": 9.99},
+        {"name": "Brunette Tinted Dry Shampoo", "sub_category": "Tinted Dry Shampoo", "price": 9.99},
+        {"name": "Divine Dark Dry Shampoo", "sub_category": "Tinted Dry Shampoo", "price": 9.99},
+        {"name": "Cherry Dry Shampoo", "sub_category": "Scented Dry Shampoo", "price": 8.99},
+        {"name": "Tropical Dry Shampoo", "sub_category": "Scented Dry Shampoo", "price": 8.99},
+        {"name": "Volumizing Dry Shampoo", "sub_category": "Styling", "price": 9.99},
+        {"name": "Overnight Deep Cleanse", "sub_category": "Hair Care", "price": 10.99},
+        {"name": "Hydrating Dry Shampoo", "sub_category": "Dry Shampoo", "price": 9.99}
+      ],
+      "hashtags": ["#Batiste", "#DryShampoo", "#BatisteLight"]
+    },
+    {
+      "id": "5",
+      "name": "HERO Cosmetics",
+      "category": "Skincare / Acne Care",
+      "demo_status": "opportunity",
+      "demo_health_score": 90,
+      "demo_health_delta": 7,
+      "weekly_spend": 88000,
+      "products": [
+        {"name": "Mighty Patch Original", "sub_category": "Acne Patches", "price": 12.99},
+        {"name": "Mighty Patch Invisible+", "sub_category": "Acne Patches", "price": 14.99},
+        {"name": "Mighty Patch Surface", "sub_category": "Acne Patches", "price": 17.99},
+        {"name": "Mighty Patch Micropoint for Blemishes", "sub_category": "Acne Treatment", "price": 12.99},
+        {"name": "Lightning Wand Dark Spot Serum", "sub_category": "Skincare", "price": 16.99},
+        {"name": "Rescue Balm +Red Correct", "sub_category": "Skincare", "price": 15.99},
+        {"name": "Dissolve Away Cleansing Balm", "sub_category": "Cleanser", "price": 14.99},
+        {"name": "Exfoliating Jelly Cleanser", "sub_category": "Cleanser", "price": 13.99},
+        {"name": "Force Shield Superfine Sunscreen SPF 30", "sub_category": "Sun Care", "price": 21.99},
+        {"name": "Pore Control Niacinamide Primer", "sub_category": "Primer", "price": 16.99}
+      ],
+      "hashtags": ["#HEROCosmetics", "#MightyPatch", "#HeroSkin"]
+    }
+  ],
+  "alerts": [
+    {
+      "id": "alert_arm_hammer_reformulation",
+      "brand_id": "1",
+      "brand_name": "ARM & HAMMER",
+      "severity": "critical",
+      "title": "Cat Litter Reformulation Complaints Surge",
+      "summary_template": "ARM & HAMMER Cat Litter health score dropped to {{health_score}} (from {{previous_score}}) after {{negative_reviews}} negative reviews in 14 days citing 'chemical smell' and 'clumping failure' with the new DUAL DEFENSE Microban formula. {{complaint_docs}} complaint documents flagged for review.",
+      "recommendation": "Pause DUAL DEFENSE Microban TV creative and activate Amazon review response team. Brief Walmart category manager on reformulation timeline. Run urgent VOC analysis on Microban-specific complaints vs. legacy Clump & Seal reviews.",
+      "metrics": {
+        "health_score": 64,
+        "previous_score": 78,
+        "negative_reviews": 2847,
+        "complaint_docs": 156
+      }
+    },
+    {
+      "id": "alert_oxiclean_spend",
+      "brand_id": "2",
+      "brand_name": "OxiClean",
+      "severity": "warning",
+      "title": "Linear TV Over-Indexed vs. Retail Media",
+      "summary_template": "OxiClean Linear TV spend delivers {{low_roas_channel}} ROAS — 2.3x lower than {{high_roas_channel}} at 4.2x ROAS. Following the NAD ruling against OxiClean's 'Scary Bleach' TV creative, reallocating 30% of TV budget could deliver {{projected_lift}} in monthly revenue lift.",
+      "recommendation": "Shift $58K/week from Linear TV to Walmart Connect and Amazon Ads Sponsored Video placements. Leverage existing Wavemaker creative assets optimized for retail media. Prioritize OxiClean stain-removal demo content that drove 4.2x ROAS in Q4 holiday campaign.",
+      "metrics": {
+        "high_roas_channel": "Retail Media",
+        "low_roas_channel": "Linear TV",
+        "projected_lift": "$380K/month"
+      }
+    },
+    {
+      "id": "alert_hero_tiktok",
+      "brand_id": "5",
+      "brand_name": "HERO Cosmetics",
+      "severity": "opportunity",
+      "title": "TikTok Cleanser Launch Amplification Window",
+      "summary_template": "HERO Cosmetics {{channel}} engagement spiked {{engagement_spike}} ahead of the 3-SKU cleanser platform launch. With Alix Earle driving {{influencer_roas}} influencer ROAS, a {{recommended_increase}} increase in social spend during launch week could capture the Gen Z skincare moment.",
+      "recommendation": "Increase TikTok and Instagram Reels spend by 40% during the cleanser launch window. Activate micro-influencer seeding program leveraging Mighty Patch's existing creator network of 30+ partners. Target #acneskincare and #skincareroutine hashtags where HERO already indexes in the top 5.",
+      "metrics": {
+        "channel": "TikTok",
+        "engagement_spike": "+270%",
+        "influencer_roas": "7.2x",
+        "recommended_increase": "40%"
+      }
+    }
+  ],
+  "channels": [
+    {"id": "ch_search", "name": "Paid Search", "type": "digital"},
+    {"id": "ch_social", "name": "Social Media", "type": "social"},
+    {"id": "ch_display", "name": "Display Ads", "type": "digital"},
+    {"id": "ch_tv", "name": "Linear TV", "type": "traditional"},
+    {"id": "ch_ctv", "name": "Connected TV", "type": "digital"},
+    {"id": "ch_retail", "name": "Retail Media", "type": "retail_media"},
+    {"id": "ch_email", "name": "Email / CRM", "type": "digital"},
+    {"id": "ch_print", "name": "Print / Circulars", "type": "traditional"}
+  ],
+  "retailers": [
+    {"id": 1, "name": "Walmart", "channel_type": "Mass", "has_retail_media": true, "retail_media_name": "Walmart Connect"},
+    {"id": 2, "name": "Amazon", "channel_type": "E-commerce", "has_retail_media": true, "retail_media_name": "Amazon Ads"},
+    {"id": 3, "name": "Target", "channel_type": "Mass", "has_retail_media": true, "retail_media_name": "Target Roundel"},
+    {"id": 4, "name": "Kroger", "channel_type": "Grocery", "has_retail_media": true, "retail_media_name": "Kroger Precision Marketing"},
+    {"id": 5, "name": "Costco", "channel_type": "Club", "has_retail_media": false, "retail_media_name": "None"}
+  ],
+  "theme": {
+    "colors": {
+      "primary": "#003DA5",
+      "primary_dark": "#002B82",
+      "primary_light": "#E6EEF9",
+      "accent": "#E87722",
+      "accent_dark": "#C0611A",
+      "accent_light": "#FDF1E8",
+      "navy": "#0C1F3F",
+      "navy_light": "#1A2E52",
+      "gold": "#FFB81C",
+      "gold_light": "#FFF4DC",
+      "emerald": "#00A651",
+      "emerald_light": "#E6F9EF",
+      "surface": "#F8F9FB",
+      "surface_dark": "#0E1825",
+      "card_dark": "#162031",
+      "text_primary": "#0F172A",
+      "text_secondary": "#64748B",
+      "text_dark": "#F1F5F9",
+      "text_secondary_dark": "#94A3B8",
+      "border": "#E2E8F0",
+      "border_dark": "#1E293B"
+    },
+    "fonts": {
+      "display": "Montserrat",
+      "heading": "Inter",
+      "body": "Inter"
+    },
+    "app_title": "Brand Control Tower"
+  },
+  "workspace": {
+    "profile": "fevm-serverless-stable-ocafq5",
+    "workspace_url": "https://fevm-serverless-stable-ocafq5.cloud.databricks.com",
+    "catalog": "serverless_stable_ocafq5_catalog",
+    "schema": "chd_demo",
+    "warehouse_id": "46430b387bfd91fd",
+    "genie_space_id": "01f12f9ca4c3183ea1c2f3dd03a7e7dd",
+    "genie_space_name": "CHD Brand Intelligence",
+    "ka_endpoint": "ka-946c08e3-endpoint",
+    "ka_name": "CHD_Complaint_Docs",
+    "ka_tile_id": "946c08e3-b908-4428-9662-3f03cc3b9c47",
+    "mas_endpoint": "mas-bc869504-endpoint",
+    "mas_name": "CHD_Brand_Control_Tower",
+    "mas_tile_id": "bc869504-e866-4c2d-9766-54d972b0236a",
+    "mmm_endpoint": "chd-marketing-mix-model"
+  },
+  "data_volumes": {
+    "row_counts": {
+      "brand_health_daily": 10000,
+      "channel_spend_daily": 50000,
+      "social_mentions": 100000,
+      "retailer_pos": 200000,
+      "alerts_history": 5000
+    }
+  }
+}

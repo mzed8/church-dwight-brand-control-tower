@@ -1,0 +1,11 @@
+Replace with customer logo during codegen.
+
+This placeholder should be replaced with the actual brand-logo.png for each customer.
+The logo should be:
+  - 400x120 pixels with transparent background
+  - Customer brand colors and name
+  - Text: "[BRAND] CONTROL TOWER"
+  - Clean sans-serif font
+  - PNG format with RGBA channels
+
+The generation script is located in the customer's scripts/ directory.
